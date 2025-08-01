@@ -5,9 +5,9 @@ import os
 from flask import Flask, request, jsonify
 from flask_migrate import Migrate
 from flask_cors import CORS
-from utils import APIException, generate_sitemap
-from admin import setup_admin
-from models import db, User, Person, Planet, Starship, Favorite
+from src.utils import APIException, generate_sitemap
+from src.admin import setup_admin
+from src.models import db, User, Person, Planet, Starship, Favorite
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
