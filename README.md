@@ -1,76 +1,194 @@
-<a href="https://www.breatheco.de"><img height="280" align="right" src="https://github.com/4GeeksAcademy/flask-rest-hello/blob/main/docs/assets/badge.png?raw=true"></a>
+# Star Wars Blog REST API
 
-# Flask Boilerplate for Junior Developers
+A RESTful API for a fictional Star Wars blog. Built with Flask and PostgreSQL, this app provides data on characters, planets, and starships. Users can also manage their own favorites.
 
-Create flask API's in minutes, [📹 watch the video tutorial](https://youtu.be/ORxQ-K3BzQA).
+🔗 **Live Site**: [https://flask-rest-hello-jgs1.onrender.com/](https://flask-rest-hello-jgs1.onrender.com/)
 
-- [Extensive documentation here](https://start.4geeksacademy.com).
-- Integrated with Pipenv for package managing.
-- Fast deloyment to render.com or heroku with `$ pipenv run deploy`.
-- Use of `.env` file.
-- SQLAlchemy integration for database abstraction.
+---
 
-## 1) Installation
+## Tech Stack
 
-This template installs itself in a few seconds if you open it for free with Codespaces (recommended) or Gitpod.
-Skip this installation steps and jump to step 2 if you decide to use any of those services.
+- Python 3.10
+- Flask
+- SQLAlchemy + Flask-Migrate
+- PostgreSQL
+- Pipenv
+- Render.com for deployment
 
-> Important: The boiplerplate is made for python 3.10 but you can change the `python_version` on the Pipfile.
+---
 
-The following steps are automatically runned withing gitpod, if you are doing a local installation you have to do them manually:
+## API Overview
 
-```sh
-pipenv install;
-psql -U root -c 'CREATE DATABASE example;'
-pipenv run init;
-pipenv run migrate;
-pipenv run upgrade;
-```
+This API follows RESTful conventions and returns all data as JSON.
 
-> Note: Codespaces users can connect to psql by typing: `psql -h localhost -U gitpod example`
+Some endpoints are public, while others require a simple `username` passed in the request body or as a query parameter.
 
-## 2) How to Start coding
+**Base URL**: `https://flask-rest-hello-jgs1.onrender.com`
 
-There is an example API working with an example database. All your application code should be written inside the `./src/` folder.
+---
 
-- src/main.py (it's where your endpoints should be coded)
-- src/models.py (your database tables and serialization logic)
-- src/utils.py (some reusable classes and functions)
-- src/admin.py (add your models to the admin and manage your data easily)
+## Authentication
 
-For a more detailed explanation, look for the tutorial inside the `docs` folder.
+This API uses a simple username-based system:
+- For GET `/user/favorites`: Pass username in `X-Username` header
+- For POST favorites: Pass `username` in request body JSON
+- For DELETE favorites: Pass `username` as query parameter
 
-## Remember to migrate every time you change your models
+---
 
-You have to migrate and upgrade the migrations for every update you make to your models:
+## API Endpoints
 
+### User Endpoints
+
+| Method | Endpoint            | Description                         | Auth Required |
+|--------|---------------------|-------------------------------------|---------------|
+| GET    | `/user`             | Get all users                      | No            |
+| GET    | `/user/<user_id>`   | Get user by ID                     | No            |
+| GET    | `/user/favorites`   | Get all favorites for a user       | Yes (Header)  |
+
+#### Get User Favorites
 ```bash
-$ pipenv run migrate # (to make the migrations)
-$ pipenv run upgrade  # (to update your databse with the migrations)
+curl -H "X-Username: your_username" \
+  https://flask-rest-hello-jgs1.onrender.com/user/favorites
 ```
 
-## Generate a database diagram
+### Planets
 
-If you want to visualize the structure of your database in the form of a diagram, you can generate it with the following command:
+| Method | Endpoint                | Description                                   | Auth Required |
+|--------|-------------------------|-----------------------------------------------|---------------|
+| GET    | `/planets`              | Get all planets                               | No            |
+| GET    | `/planets/<planet_id>`  | Get specific planet by ID                     | No            |
+| POST   | `/favorite/planet/<id>` | Add a planet to user's favorites              | Yes (Body)    |
+| DELETE | `/favorite/planet/<id>` | Remove a planet from user's favorites         | Yes (Query)   |
 
+#### Add Planet to Favorites
 ```bash
-$ pipenv run diagram
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"username": "your_username"}' \
+  https://flask-rest-hello-jgs1.onrender.com/favorite/planet/1
 ```
 
-This command will generate a file with the database diagram based on the models defined in `src/models.py`.
+#### Remove Planet from Favorites
+```bash
+curl -X DELETE \
+  "https://flask-rest-hello-jgs1.onrender.com/favorite/planet/1?username=your_username"
+```
 
-## Check your API live
+### People
 
-1. Once you run the `pipenv run start` command your API will start running live and you can open it by clicking in the "ports" tab and then clicking "open browser".
+| Method | Endpoint                | Description                                  | Auth Required |
+|--------|-------------------------|----------------------------------------------|---------------|
+| GET    | `/people`               | Get all people                               | No            |
+| GET    | `/people/<people_id>`   | Get specific person by ID                    | No            |
+| POST   | `/favorite/people/<id>` | Add a person to user's favorites             | Yes (Body)    |
+| DELETE | `/favorite/people/<id>` | Remove a person from user's favorites        | Yes (Query)   |
 
-> ✋ If you are working on a coding cloud like [Codespaces](https://docs.github.com/en/codespaces/developing-in-codespaces/forwarding-ports-in-your-codespace#sharing-a-port) or [Gitpod](https://www.gitpod.io/docs/configure/workspaces/ports#configure-port-visibility) make sure that your forwared port is public.
+#### Add Person to Favorites
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"username": "your_username"}' \
+  https://flask-rest-hello-jgs1.onrender.com/favorite/people/1
+```
 
-## Publish/Deploy your website!
+### Starships
 
-This boilerplate it's 100% read to deploy with Render.com and Herkou in a matter of minutes. Please read the [official documentation about it](https://start.4geeksacademy.com/deploy).
+| Method | Endpoint                   | Description                                  | Auth Required |
+|--------|----------------------------|----------------------------------------------|---------------|
+| GET    | `/starships`               | Get all starships                            | No            |
+| GET    | `/starships/<starship_id>` | Get specific starship by ID                  | No            |
+| POST   | `/favorite/starship/<id>`  | Add a starship to user's favorites           | Yes (Body)    |
+| DELETE | `/favorite/starship/<id>`  | Remove a starship from user's favorites      | Yes (Query)   |
 
-### Contributors
+#### Add Starship to Favorites
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"username": "your_username"}' \
+  https://flask-rest-hello-jgs1.onrender.com/favorite/starship/1
+```
 
-This template was built as part of the 4Geeks Academy [Coding Bootcamp](https://4geeksacademy.com/us/coding-bootcamp) by [Alejandro Sanchez](https://twitter.com/alesanchezr) and many other contributors. Find out more about our [Full Stack Developer Course](https://4geeksacademy.com/us/coding-bootcamps/part-time-full-stack-developer), and [Data Science Bootcamp](https://4geeksacademy.com/us/coding-bootcamps/datascience-machine-learning).
+---
 
-You can find other templates and resources like this at the [school github page](https://github.com/4geeksacademy/).
+## Response Format
+
+All endpoints return JSON responses with appropriate HTTP status codes:
+
+### Success Responses
+- `200`: Successful GET request
+- `201`: Successful resource creation
+- `404`: Resource not found
+- `400`: Bad request (missing data, duplicate favorites, etc.)
+
+### Sample Response - Get All Planets
+```json
+[
+  {
+    "id": 1,
+    "name": "Tatooine",
+    "diameter": "10465",
+    "climate": "arid",
+    "terrain": "desert",
+    "population": "200000"
+  },
+  {
+    "id": 2,
+    "name": "Alderaan",
+    "diameter": "12500",
+    "climate": "temperate",
+    "terrain": "grasslands, mountains",
+    "population": "2000000000"
+  }
+]
+```
+
+### Sample Response - User Favorites
+```json
+[
+  {
+    "id": 1,
+    "user_id": 1,
+    "planet_id": 1,
+    "person_id": null,
+    "starship_id": null
+  },
+  {
+    "id": 2,
+    "user_id": 1,
+    "planet_id": null,
+    "person_id": 1,
+    "starship_id": null
+  }
+]
+```
+
+---
+
+## Error Handling
+
+The API returns consistent error messages:
+
+```json
+{
+  "error": "User not found"
+}
+```
+
+```json
+{
+  "error": "Favorite already exists"
+}
+```
+
+---
+
+## Database Models
+
+The API uses four main models:
+
+- **User**: Contains user information and relationships to favorites
+- **Person**: Star Wars characters (Luke Skywalker, Darth Vader, etc.)
+- **Planet**: Star Wars planets (Tatooine, Alderaan, etc.)
+- **Starship**: Star Wars vehicles (Millennium Falcon, Death Star, etc.)
+- **Favorite**: Junction table linking users to their favorite items
