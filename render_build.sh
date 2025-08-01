@@ -1,11 +1,17 @@
-
 #!/usr/bin/env bash
-# exit on error
+# Exit on error
 set -o errexit
 
-# npm install
-# npm run build
-
+echo "Installing dependencies..."
 pipenv install
 
-pipenv run upgrade
+echo "Running DB migrations or upgrades..."
+pipenv run flask db upgrade
+
+echo "Seeding base data..."
+pipenv run python src/seed_data.py
+
+echo "Seeding users..."
+pipenv run python src/seed_users.py
+
+echo "Build script completed."
