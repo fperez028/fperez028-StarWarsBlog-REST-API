@@ -18,9 +18,10 @@ flask-cors = "==4.0.0"
 gunicorn = "*"
 flask-admin = "==1.6.1"
 wtforms = "==3.0.1"
+tomli = "*"
 
 [requires]
-python_version = "3.13"
+python_version = "3.10"
 
 [scripts]
 start="flask run -p 3000 -h 0.0.0.0"
