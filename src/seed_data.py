@@ -1,12 +1,17 @@
-from models import db, Person, Planet, Starship
+from models import db, Person, Planet, Starship, Favorite
 from app import app
 
 def seed_data():
     with app.app_context():
+        # Delete favorites first (for persons, planets, starships)
+        db.session.query(Favorite).delete()
+        
         # Clear existing data (optional but useful for dev)
         db.session.query(Person).delete()
         db.session.query(Planet).delete()
         db.session.query(Starship).delete()
+
+        db.session.commit()
 
         # Add people
         people = [
