@@ -3,6 +3,7 @@
 A RESTful API for a fictional Star Wars blog. Built with Flask and PostgreSQL, this app provides data on characters, planets, and starships. Users can also manage their own favorites.
 
 🔗 **Live Site**: [https://flask-rest-hello-jgs1.onrender.com/](https://flask-rest-hello-jgs1.onrender.com/)
+>**Note:** Render will spin down the site after 15min of no traffic, allow a moment for the site to come back up when you visit it
 
 ---
 
