@@ -1,6 +1,6 @@
 import random
-from src.app import app
-from src.models import db, User, Favorite, Planet, Person, Starship
+from app import app
+from models import db, User, Favorite, Planet, Person, Starship
 
 def seed_users_and_favorites():
     with app.app_context():

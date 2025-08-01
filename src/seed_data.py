@@ -1,5 +1,5 @@
-from src.models import db, Person, Planet, Starship
-from src.app import app
+from models import db, Person, Planet, Starship
+from app import app
 
 def seed_data():
     with app.app_context():
