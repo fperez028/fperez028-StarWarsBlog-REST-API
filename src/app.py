@@ -2,9 +2,8 @@
 This module starts the API Server, loads the DB, and adds endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for
+from flask import Flask, request, jsonify
 from flask_migrate import Migrate
-from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
@@ -37,12 +36,12 @@ def sitemap():
     return generate_sitemap(app)
 
 # Test route
-@app.route('/user', methods=['GET'])
-def handle_hello():
-    return jsonify({"msg": "Hello, this is your GET /user response"}), 200
+# @app.route('/user', methods=['GET'])
+# def handle_hello():
+#     return jsonify({"msg": "Hello, this is your GET /user response"}), 200
 
 # USERS
-@app.route("/api/users", methods=["GET"])
+@app.route('/user', methods=['GET'])
 def get_all_users():
     users = User.query.all()
     return jsonify([user.serialize() for user in users]), 200
@@ -54,11 +53,13 @@ def get_user(user_id):
         return jsonify({"error": "User not found"}), 404
     return jsonify(user.serialize()), 200
 
-@app.route("/api/users/favorites", methods=["GET"])
-def get_user_favorites():
-    username = request.args.get("username")
+@app.route('/user/favorites', methods=["GET"])
+def get_current_user_favorites():
+    # Try to get the username from a custom header
+    username = request.headers.get("X-Username")
+
     if not username:
-        return jsonify({"error": "Username is required as query param"}), 400
+        return jsonify({"error": "Missing 'X-Username' header"}), 400
 
     user = User.query.filter_by(username=username).first()
     if not user:
@@ -68,7 +69,7 @@ def get_user_favorites():
     return jsonify(favorites), 200
 
 # FAVORITES
-@app.route("/api/favorite/planet/<int:planet_id>", methods=["POST"])
+@app.route("/favorite/planet/<int:planet_id>", methods=["POST"])
 def add_favorite_planet(planet_id):
     username = request.json.get("username")
     user = User.query.filter_by(username=username).first()
@@ -86,7 +87,7 @@ def add_favorite_planet(planet_id):
     db.session.commit()
     return jsonify(favorite.serialize()), 201
 
-@app.route("/api/favorite/planet/<int:planet_id>", methods=["DELETE"])
+@app.route("/favorite/planet/<int:planet_id>", methods=["DELETE"])
 def delete_favorite_planet(planet_id):
     username = request.args.get("username")
     user = User.query.filter_by(username=username).first()
@@ -101,7 +102,7 @@ def delete_favorite_planet(planet_id):
     db.session.commit()
     return jsonify({"msg": "Favorite planet removed"}), 200
 
-@app.route("/api/favorite/people/<int:people_id>", methods=["POST"])
+@app.route("/favorite/people/<int:people_id>", methods=["POST"])
 def add_favorite_person(people_id):
     username = request.json.get("username")
     user = User.query.filter_by(username=username).first()
@@ -119,7 +120,7 @@ def add_favorite_person(people_id):
     db.session.commit()
     return jsonify(favorite.serialize()), 201
 
-@app.route("/api/favorite/people/<int:people_id>", methods=["DELETE"])
+@app.route("/favorite/people/<int:people_id>", methods=["DELETE"])
 def delete_favorite_person(people_id):
     username = request.args.get("username")
     user = User.query.filter_by(username=username).first()
@@ -134,7 +135,7 @@ def delete_favorite_person(people_id):
     db.session.commit()
     return jsonify({"msg": "Favorite person removed"}), 200
 
-@app.route("/api/favorite/starship/<int:starship_id>", methods=["POST"])
+@app.route("/favorite/starship/<int:starship_id>", methods=["POST"])
 def add_favorite_starship(starship_id):
     username = request.json.get("username")
     user = User.query.filter_by(username=username).first()
@@ -152,7 +153,7 @@ def add_favorite_starship(starship_id):
     db.session.commit()
     return jsonify(favorite.serialize()), 201
 
-@app.route("/api/favorite/starship/<int:starship_id>", methods=["DELETE"])
+@app.route("/favorite/starship/<int:starship_id>", methods=["DELETE"])
 def delete_favorite_starship(starship_id):
     username = request.args.get("username")
     user = User.query.filter_by(username=username).first()
@@ -168,12 +169,12 @@ def delete_favorite_starship(starship_id):
     return jsonify({"msg": "Favorite starship removed"}), 200
 
 # PEOPLE
-@app.route("/api/people", methods=["GET"])
+@app.route("/people", methods=["GET"])
 def get_all_people():
     people = Person.query.all()
     return jsonify([p.serialize() for p in people]), 200
 
-@app.route("/api/people/<int:people_id>", methods=["GET"])
+@app.route("/people/<int:people_id>", methods=["GET"])
 def get_single_person(people_id):
     person = Person.query.get(people_id)
     if not person:
@@ -181,12 +182,12 @@ def get_single_person(people_id):
     return jsonify(person.serialize()), 200
 
 # PLANETS
-@app.route("/api/planets", methods=["GET"])
+@app.route("/planets", methods=["GET"])
 def get_all_planets():
     planets = Planet.query.all()
     return jsonify([planet.serialize() for planet in planets]), 200
 
-@app.route("/api/planets/<int:planet_id>", methods=["GET"])
+@app.route("/planets/<int:planet_id>", methods=["GET"])
 def get_single_planet(planet_id):
     planet = Planet.query.get(planet_id)
     if not planet:
@@ -194,12 +195,12 @@ def get_single_planet(planet_id):
     return jsonify(planet.serialize()), 200
 
 # STARSHIPS
-@app.route("/api/starships", methods=["GET"])
+@app.route("/starships", methods=["GET"])
 def get_all_starships():
     starships = Starship.query.all()
     return jsonify([s.serialize() for s in starships]), 200
 
-@app.route("/api/starships/<int:starship_id>", methods=["GET"])
+@app.route("/starships/<int:starship_id>", methods=["GET"])
 def get_single_starship(starship_id):
     starship = Starship.query.get(starship_id)
     if not starship:
