@@ -127,7 +127,7 @@ def seed_data():
 
         db.session.add_all(planets + people + starships)
         db.session.commit()
-        print("🌱 Seed data added successfully!")
+        print("Seed data added successfully!")
 
 if __name__ == "__main__":
     seed_data()
